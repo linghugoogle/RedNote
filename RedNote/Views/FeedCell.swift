@@ -19,6 +19,8 @@ class FeedCell: UICollectionViewCell {
     private let authorNameLabel = UILabel()
     private let likeButton = UIButton()
     private let likeCountLabel = UILabel()
+    // 播放浮层（视频时显示）
+    private let playOverlayView = UIImageView(image: UIImage(systemName: "play.circle.fill"))
 
     // MARK: - Properties
     var onTapAction: (() -> Void)?
@@ -84,6 +86,11 @@ class FeedCell: UICollectionViewCell {
         containerView.addSubview(authorNameLabel)
         containerView.addSubview(likeButton)
         containerView.addSubview(likeCountLabel)
+        playOverlayView.tintColor = .white
+        playOverlayView.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        playOverlayView.contentMode = .scaleAspectFit
+        playOverlayView.isHidden = true
+        contentView.addSubview(playOverlayView)
     }
 
     private func setupConstraints() {
@@ -132,6 +139,11 @@ class FeedCell: UICollectionViewCell {
             make.centerY.equalTo(authorAvatarImageView)
             make.left.equalTo(authorAvatarImageView.snp.right).offset(6)
             make.right.lessThanOrEqualTo(likeCountLabel.snp.left).offset(-8)
+        }
+        // 播放浮层覆盖在图片中心
+        playOverlayView.snp.makeConstraints { make in
+            make.center.equalTo(imageView)
+            make.width.height.equalTo(40)
         }
     }
 
@@ -198,6 +210,24 @@ class FeedCell: UICollectionViewCell {
                 }
             }
         }
+        // 视频封面优先（没有则使用 imageURL）
+        let coverURLString = model.videoCoverURL ?? model.imageURL
+        if let url = URL(string: coverURLString) {
+            imageView.sd_setImage(
+                with: url,
+                placeholderImage: nil,
+                options: [.progressiveLoad, .retryFailed]
+            ) { [weak self] image, error, cacheType, url in
+                if error == nil {
+                    self?.imageView.backgroundColor = .clear
+                }
+            }
+        }
+
+        // 视频时显示播放浮层
+        playOverlayView.isHidden = !model.isVideo
+
+        // 使用SDWebImage加载头像
     }
 
 

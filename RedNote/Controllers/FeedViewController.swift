@@ -78,7 +78,33 @@ class FeedViewController: UIViewController {
             FeedModel(id: "5", title: "护肤心得分享", content: "最近用的护肤品效果很好", imageURL: "https://picsum.photos/id/225/300/380", imageWidth: 300, imageHeight: 380, authorName: "护肤达人", authorAvatar: "https://picsum.photos/id/338/50/50", likeCount: 178, commentCount: 34, tags: ["护肤", "美妆"]),
             FeedModel(id: "6", title: "健身打卡", content: "坚持健身第30天，感觉身体越来越好", imageURL: "https://picsum.photos/id/375/300/420", imageWidth: 300, imageHeight: 420, authorName: "健身教练", authorAvatar: "https://picsum.photos/id/453/50/50", likeCount: 234, commentCount: 56, tags: ["健身", "运动"]),
             FeedModel(id: "7", title: "咖啡时光", content: "下午茶时间，享受一杯香浓的咖啡", imageURL: "https://picsum.photos/id/429/300/360", imageWidth: 300, imageHeight: 360, authorName: "咖啡爱好者", authorAvatar: "https://picsum.photos/id/507/50/50", likeCount: 156, commentCount: 28, tags: ["咖啡", "生活"]),
-            FeedModel(id: "8", title: "宠物日常", content: "我家小猫咪今天特别可爱", imageURL: "https://picsum.photos/id/593/300/480", imageWidth: 300, imageHeight: 480, authorName: "铲屎官", authorAvatar: "https://picsum.photos/id/646/50/50", likeCount: 289, commentCount: 42, tags: ["宠物", "猫咪"])
+            FeedModel(id: "8", title: "宠物日常", content: "我家小猫咪今天特别可爱", imageURL: "https://picsum.photos/id/593/300/480", imageWidth: 300, imageHeight: 480, authorName: "铲屎官", authorAvatar: "https://picsum.photos/id/646/50/50", likeCount: 289, commentCount: 42, tags: ["宠物", "猫咪"]),
+            FeedModel(id: "v1",
+                      title: "买手机",
+                      content: "示例视频：Big Buck Bunny",
+                      imageURL: "https://picsum.photos/id/1050/300/400",
+                      imageWidth: 300,
+                      imageHeight: 400,
+                      authorName: "ZJOL",
+                      authorAvatar: "https://picsum.photos/id/64/50/50",
+                      likeCount: 1024,
+                      commentCount: 88,
+                      tags: ["视频", "示例"],
+                      videoURL: "https://v-cdn.zjol.com.cn/280443.mp4",
+                      videoCoverURL: "https://picsum.photos/id/1050/600/800"),
+            FeedModel(id: "v2",
+                      title: "产品宣传",
+                      content: "示例视频：For Bigger Blazes",
+                      imageURL: "https://picsum.photos/id/1044/300/400",
+                      imageWidth: 300,
+                      imageHeight: 400,
+                      authorName: "西瓜",
+                      authorAvatar: "https://picsum.photos/id/91/50/50",
+                      likeCount: 768,
+                      commentCount: 56,
+                      tags: ["视频", "示例"],
+                      videoURL: "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-360p.mp4",
+                      videoCoverURL: "https://picsum.photos/id/1044/600/800")
         ]
 
         adapter.performUpdates(animated: true)
@@ -132,6 +158,14 @@ extension FeedViewController: ListAdapterDataSource {
 // MARK: - FeedSectionControllerDelegate
 extension FeedViewController: FeedSectionControllerDelegate {
     func feedSectionController(_ controller: FeedSectionController, didSelectFeed feed: FeedModel) {
+        if feed.isVideo {
+            // 收集所有视频列表，并从当前视频开始播放
+            let videos = feedData.filter { $0.isVideo }
+            let startIndex = videos.firstIndex(where: { $0.id == feed.id }) ?? 0
+            let vc = VideoFeedViewController(videos: videos, startIndex: startIndex)
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
         let detailVC = FeedDetailViewController(feedModel: feed)
         navigationController?.pushViewController(detailVC, animated: true)
     }
@@ -144,7 +178,7 @@ extension FeedViewController: WaterfallLayoutDelegate {
         guard indexPath.section < feedData.count else { return 250 }
 
         let feed = feedData[indexPath.section]
-        
+
         // 获取 collectionView 的宽度来计算 cell 宽度
         let collectionViewWidth = collectionView.bounds.width
         let cellWidth = (collectionViewWidth - layout.sectionInset.left - layout.sectionInset.right - CGFloat(layout.numberOfColumns - 1) * layout.minimumColumnSpacing) / CGFloat(layout.numberOfColumns)

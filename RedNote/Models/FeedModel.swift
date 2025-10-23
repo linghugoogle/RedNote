@@ -22,7 +22,28 @@ class FeedModel: NSObject {
     let commentCount: Int
     let tags: [String]
     
-    init(id: String, title: String, content: String, imageURL: String, imageWidth: CGFloat, imageHeight: CGFloat, authorName: String, authorAvatar: String, likeCount: Int, commentCount: Int, tags: [String]) {
+    // 视频相关（可选）
+    let videoURL: String?
+    let videoCoverURL: String?
+    
+    // 是否为视频
+    var isVideo: Bool {
+        return videoURL != nil
+    }
+    
+    init(id: String,
+         title: String,
+         content: String,
+         imageURL: String,
+         imageWidth: CGFloat,
+         imageHeight: CGFloat,
+         authorName: String,
+         authorAvatar: String,
+         likeCount: Int,
+         commentCount: Int,
+         tags: [String],
+         videoURL: String? = nil,
+         videoCoverURL: String? = nil) {
         self.id = id
         self.title = title
         self.content = content
@@ -34,6 +55,8 @@ class FeedModel: NSObject {
         self.likeCount = likeCount
         self.commentCount = commentCount
         self.tags = tags
+        self.videoURL = videoURL
+        self.videoCoverURL = videoCoverURL
         super.init()
     }
     
